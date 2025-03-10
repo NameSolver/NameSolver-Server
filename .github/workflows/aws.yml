@@ -1,4 +1,4 @@
-name: Didacto-core dev CI/CD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
