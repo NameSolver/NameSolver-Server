@@ -20,12 +20,12 @@ jobs:
         with:
           java-version: 17
 
-      - name: Set up application.properties
+      - name: make application.yml
         run: |
           mkdir -p ./src/main/resources
           cd ./src/main/resources
           touch ./application.yml
-          echo "${{ secrets.APPLICATION_PROD }}" > ./src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_PROD }}" > ./application.yml
 
       # Gradle Build
       - name: Build with Gradle
