@@ -20,6 +20,7 @@ jobs:
         with:
           java-version: 17
 
+      # application.yml 주입
       - name: make application.yml
         run: |
           mkdir -p ./src/main/resources
