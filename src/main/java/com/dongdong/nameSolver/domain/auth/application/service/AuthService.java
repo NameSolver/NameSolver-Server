@@ -46,7 +46,8 @@ public class AuthService {
 
     public String extractKey(String name) throws IOException {
         Document doc = Jsoup.connect("https://solved.ac/profile/" + name).get();
-        Elements profile = doc.select("#__next > div.css-1s1t70h > div.css-1948bce > div:nth-child(4) > div.css-0");
+        System.out.println(doc.title());
+        Elements profile = doc.selectXpath("//*[@id=\"__next\"]/div[3]/div[2]/div[4]/div[1]/span");
         return profile.get(0).text();
     }
 }
