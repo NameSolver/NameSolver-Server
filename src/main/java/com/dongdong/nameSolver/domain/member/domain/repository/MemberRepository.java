@@ -1,7 +1,6 @@
 package com.dongdong.nameSolver.domain.member.domain.repository;
 
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
-import com.dongdong.nameSolver.domain.test.domain.Member;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
