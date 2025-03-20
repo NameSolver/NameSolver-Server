@@ -4,7 +4,12 @@ import com.dongdong.nameSolver.domain.auth.application.dto.KeyDto;
 import com.dongdong.nameSolver.domain.auth.domain.repository.AuthRepository;
 import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 import java.util.UUID;
 
 @Service
@@ -37,5 +42,11 @@ public class AuthService {
         // 유저 정보 저장
         memberRepository.save(name, password);
         // 되면 true 반환
+    }
+
+    public String extractKey(String name) throws IOException {
+        Document doc = Jsoup.connect("https://solved.ac/profile/" + name).get();
+        Elements profile = doc.select("#__next > div.css-1s1t70h > div.css-1948bce > div:nth-child(4) > div.css-0");
+        return profile.get(0).text();
     }
 }
