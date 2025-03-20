@@ -3,13 +3,21 @@ package com.dongdong.nameSolver.domain.auth.application.service;
 import com.dongdong.nameSolver.domain.auth.application.dto.KeyDto;
 import com.dongdong.nameSolver.domain.auth.domain.repository.AuthRepository;
 import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
+import com.dongdong.nameSolver.global.util.WebDriverUtil;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -45,9 +53,17 @@ public class AuthService {
     }
 
     public String extractKey(String name) throws IOException {
-        Document doc = Jsoup.connect("https://solved.ac/profile/" + name).get();
-        System.out.println(doc.title());
-        Elements profile = doc.selectXpath("//*[@id=\"__next\"]/div[3]/div[2]/div[4]/div[1]/span");
-        return profile.get(0).text();
+        WebDriver driver = WebDriverUtil.getChromeDriver();
+
+        if (!ObjectUtils.isEmpty(driver)) {
+            driver.get("https://solved.ac/profile/" + name);
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+
+            WebElement element = driver.findElement(By.cssSelector("#__next > div.css-1s1t70h > div.css-1948bce > div:nth-child(4) > div.css-0 > span"));
+            return element.getText();
+        }
+        else {
+            throw new RuntimeException("셀레니움 연결 실패");
+        }
     }
 }
