@@ -5,4 +5,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoginService {
 
+    public void generateKey() {
+    }
+
+    public void signIn() {
+    }
 }
