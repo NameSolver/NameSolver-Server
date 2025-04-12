@@ -27,6 +27,8 @@ public class AuthService {
     private final MemberRepository memberRepository;
 
     public KeyDto generateKey(String name) {
+        //유저 존재하는지 확인
+
         // 랜덤 키 생성
         UUID randomKey = UUID.randomUUID();
 
