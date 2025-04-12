@@ -11,11 +11,11 @@ import java.util.concurrent.TimeUnit;
 public class RedisUtil {
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void setDate(String key, String value, Long expiredTime) {
+    public void setData(String key, String value, Long expiredTime) {
         redisTemplate.opsForValue().set(key, value, expiredTime, TimeUnit.MILLISECONDS);
     }
 
-    public String getDate(String key) {
+    public String getData(String key) {
         return redisTemplate.opsForValue().get(key);
     }
 

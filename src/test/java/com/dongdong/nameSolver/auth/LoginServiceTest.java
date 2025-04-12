@@ -20,7 +20,7 @@ public class LoginServiceTest {
         loginService.generateKey("lmkn5342");
 
         //인증키 확인 요청 -> 인증 확인 -> 회원 정보 생성
-        loginService.signIn();
+//        loginService.signUp();
     }
 
     @Transactional

@@ -17,8 +17,8 @@ public class RedisTest {
     void 레디스() {
         String key = "name";
 
-        redisUtil.setDate(key, "donghyun", 1000L);
-        String value = redisUtil.getDate(key);
+        redisUtil.setData(key, "donghyun", 1000L);
+        String value = redisUtil.getData(key);
         Assertions.assertEquals(value, "donghyun");
     }
 
@@ -26,14 +26,14 @@ public class RedisTest {
     void 레디스_유효시간() {
         String key = "name";
 
-        redisUtil.setDate(key, "donghyun", 1000L);
+        redisUtil.setData(key, "donghyun", 1000L);
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        String value = redisUtil.getDate(key);
+        String value = redisUtil.getData(key);
         Assertions.assertEquals(value, null);
     }
 }
