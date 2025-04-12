@@ -9,10 +9,10 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 public class KeyDto {
-    private UUID key;
+    private String key;
 
     @Builder
-    public KeyDto(UUID key) {
+    public KeyDto(String key) {
         this.key = key;
     }
 }

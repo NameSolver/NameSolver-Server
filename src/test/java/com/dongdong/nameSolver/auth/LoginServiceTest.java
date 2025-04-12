@@ -1,26 +1,41 @@
 package com.dongdong.nameSolver.auth;
 
+import com.dongdong.nameSolver.domain.auth.application.dto.KeyDto;
+import com.dongdong.nameSolver.domain.auth.application.dto.SignUpDto;
 import com.dongdong.nameSolver.domain.auth.application.service.AuthService;
+import com.dongdong.nameSolver.domain.member.domain.entity.Member;
+import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.IOException;
 
+@Slf4j
 @SpringBootTest
 public class LoginServiceTest {
     @Autowired
     private AuthService loginService;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Test
-    void 인증키발급(){
+    void 인증키_발급(){
         //인증키 발급
-        loginService.generateKey("lmkn5342");
+        KeyDto key = loginService.generateKey("lmkn5342");
+        System.out.println("key: " + key.getKey());
+    }
 
-        //인증키 확인 요청 -> 인증 확인 -> 회원 정보 생성
-//        loginService.signUp();
+    @Test
+    @Transactional
+    void 회원가입() {
+        SignUpDto signUpDto = new SignUpDto("김동현", "lmkn", "lmkn5342", "lmkn5342", "djib1213ppoo");
+        loginService.signUp(signUpDto);
+
+        boolean result = memberRepository.existsBySolvedacName("lmkn5342");
+        Assertions.assertThat(result).isTrue();
     }
 
     @Transactional

@@ -22,7 +22,7 @@ public class WebDriverUtil {
         chromeOptions.addArguments("--disable-gpu");
 
         WebDriver driver = new ChromeDriver(chromeOptions);
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10));
         return driver;
     }
 

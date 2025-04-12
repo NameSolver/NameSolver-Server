@@ -8,20 +8,13 @@ import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
 import com.dongdong.nameSolver.global.util.RedisUtil;
 import com.dongdong.nameSolver.global.util.WebDriverUtil;
 import lombok.RequiredArgsConstructor;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-
-import java.io.IOException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -30,14 +23,14 @@ public class AuthService {
     private final AuthRepository authRepository;
     private final MemberRepository memberRepository;
     private final RedisUtil redisUtil;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public KeyDto generateKey(String solvedacName) {
         // 랜덤 키 생성
-        UUID randomKey = UUID.randomUUID();
+        String randomKey = UUID.randomUUID().toString().substring(0, 8);
 
         // 키 redis에 저장 10분 동안 유효
-        redisUtil.setData(solvedacName, randomKey.toString(), 600000L);
+        redisUtil.setData(solvedacName, randomKey, 600000L);
 
         // 키 반환
         return KeyDto.builder().key(randomKey).build();
