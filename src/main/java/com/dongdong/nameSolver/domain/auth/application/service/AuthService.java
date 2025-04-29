@@ -1,6 +1,7 @@
 package com.dongdong.nameSolver.domain.auth.application.service;
 
 import com.dongdong.nameSolver.domain.auth.application.dto.KeyDto;
+import com.dongdong.nameSolver.domain.auth.application.dto.SignInDto;
 import com.dongdong.nameSolver.domain.auth.application.dto.SignUpDto;
 import com.dongdong.nameSolver.domain.auth.domain.repository.AuthRepository;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
@@ -63,6 +64,17 @@ public class AuthService {
         // 유저 정보 저장
         Member member = Member.join(signUpDto, hashedPassword);
         memberRepository.save(member);
+    }
+
+    public String signIn(SignInDto signInDto) {
+        // 아이디 확인
+
+        // 비밀번호 일치 확인
+
+        // 토큰 발급
+
+        // 토큰 리턴
+        return null;
     }
 
     public boolean checkIdDuplication(String id) {
