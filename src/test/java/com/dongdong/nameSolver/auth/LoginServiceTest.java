@@ -1,6 +1,7 @@
 package com.dongdong.nameSolver.auth;
 
 import com.dongdong.nameSolver.domain.auth.application.dto.KeyDto;
+import com.dongdong.nameSolver.domain.auth.application.dto.SignInDto;
 import com.dongdong.nameSolver.domain.auth.application.dto.SignUpDto;
 import com.dongdong.nameSolver.domain.auth.application.service.AuthService;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
@@ -36,6 +37,16 @@ public class LoginServiceTest {
 
         boolean result = memberRepository.existsBySolvedacName("lmkn5342");
         Assertions.assertThat(result).isTrue();
+    }
+
+    @Test
+    @Transactional
+    void 로그인() {
+        // 아이디, 비밀번호 가져오기
+        SignInDto signInDto = new SignInDto();
+
+        String token = loginService.signIn(signInDto);
+        Assertions.assertThat(token).isNotNull();
     }
 
     @Transactional
