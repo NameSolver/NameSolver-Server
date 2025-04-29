@@ -5,6 +5,8 @@ import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Repository
 public class MemberRepository {
@@ -32,5 +34,13 @@ public class MemberRepository {
                 .setParameter("solvedacName", solvedacName)
                 .getResultList();
         return !members.isEmpty();
+    }
+
+
+    public Optional<Member> findById(String id) {
+        Stream<Member> member = em.createQuery("select member from Member member where member.id = :id", Member.class)
+                .setParameter("id", id)
+                .getResultStream();
+        return member.findAny();
     }
 }

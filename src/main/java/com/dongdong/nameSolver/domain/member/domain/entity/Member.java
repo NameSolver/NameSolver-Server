@@ -25,6 +25,7 @@ public class Member {
     private String id;
     private String email;
     private String password;
+    private String refreshToken;
 
     @Builder
     public Member(String name, String solvedacName, String id, String email, String password) {
@@ -43,5 +44,9 @@ public class Member {
                 .solvedacName(signUpDto.getSolvedacName())
                 .password(hashedPassword)
                 .build();
+    }
+
+    public void storeRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

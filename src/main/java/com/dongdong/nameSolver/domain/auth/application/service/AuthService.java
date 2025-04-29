@@ -3,9 +3,12 @@ package com.dongdong.nameSolver.domain.auth.application.service;
 import com.dongdong.nameSolver.domain.auth.application.dto.KeyDto;
 import com.dongdong.nameSolver.domain.auth.application.dto.SignInDto;
 import com.dongdong.nameSolver.domain.auth.application.dto.SignUpDto;
+import com.dongdong.nameSolver.domain.auth.application.dto.TokenDto;
 import com.dongdong.nameSolver.domain.auth.domain.repository.AuthRepository;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
+import com.dongdong.nameSolver.global.jwt.JwtToken;
+import com.dongdong.nameSolver.global.jwt.JwtTokenHandler;
 import com.dongdong.nameSolver.global.util.RedisUtil;
 import com.dongdong.nameSolver.global.util.WebDriverUtil;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +17,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import java.time.Duration;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -25,7 +30,11 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final RedisUtil redisUtil;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenHandler jwtTokenHandler;
 
+    /**
+     * solvedac 사용자 인증용 키 발급 메서드
+     */
     public KeyDto generateKey(String solvedacName) {
         // 랜덤 키 생성
         String randomKey = UUID.randomUUID().toString().substring(0, 8);
@@ -37,6 +46,9 @@ public class AuthService {
         return KeyDto.builder().key(randomKey).build();
     }
 
+    /**
+     * 회원가입 메서드
+     */
     public void signUp(SignUpDto signUpDto) {
         // redis 에서 키 가져오기
         String key = redisUtil.getData(signUpDto.getSolvedacName());
@@ -66,22 +78,40 @@ public class AuthService {
         memberRepository.save(member);
     }
 
-    public String signIn(SignInDto signInDto) {
+    /**
+     * 로그인 메서드
+     */
+    @Transactional
+    public TokenDto signIn(SignInDto signInDto) {
         // 아이디 확인
+        Member member = memberRepository.findById(signInDto.getId())
+                .orElseThrow(()-> new RuntimeException("해당하는 아이디가 없습니다."));
 
         // 비밀번호 일치 확인
+        String hashedPassword = passwordEncoder.encode(signInDto.getPassword());
+        if(!member.getPassword().equals(hashedPassword)) {
+            throw new RuntimeException("비밀번호가 불일치합니다.");
+        }
 
         // 토큰 발급
+        TokenDto token = jwtTokenHandler.generate(member);
+
+        // 리프레쉬 토큰 저장
+        member.storeRefreshToken(token.getRefreshToken());
+        memberRepository.save(member);
 
         // 토큰 리턴
-        return null;
+        return token;
     }
 
     public boolean checkIdDuplication(String id) {
         return memberRepository.existsById(id);
     }
 
-    public String extractKey(String solvedacName) {
+    /**
+     * solvedac 크롤링으로 인증 확인하는 메서드
+     */
+    private String extractKey(String solvedacName) {
         WebDriver driver = WebDriverUtil.getChromeDriver();
 
         if (!ObjectUtils.isEmpty(driver)) {
