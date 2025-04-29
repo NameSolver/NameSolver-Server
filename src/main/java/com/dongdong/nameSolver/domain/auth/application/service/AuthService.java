@@ -13,6 +13,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import java.time.Duration;
 import java.util.UUID;
@@ -26,6 +27,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     public KeyDto generateKey(String solvedacName) {
+        // TODO: 이미 있는 회원인지 확인
+
         // 랜덤 키 생성
         String randomKey = UUID.randomUUID().toString().substring(0, 8);
 
@@ -36,6 +39,7 @@ public class AuthService {
         return KeyDto.builder().key(randomKey).build();
     }
 
+    @Transactional
     public void signUp(SignUpDto signUpDto) {
         // redis 에서 키 가져오기
         String key = redisUtil.getData(signUpDto.getSolvedacName());
@@ -62,6 +66,8 @@ public class AuthService {
 
         // 유저 정보 저장
         Member member = Member.join(signUpDto, hashedPassword);
+
+        // TODO: redis 에서 삭제
         memberRepository.save(member);
     }
 
