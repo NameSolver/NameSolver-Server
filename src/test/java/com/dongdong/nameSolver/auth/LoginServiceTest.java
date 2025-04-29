@@ -3,6 +3,7 @@ package com.dongdong.nameSolver.auth;
 import com.dongdong.nameSolver.domain.auth.application.dto.KeyDto;
 import com.dongdong.nameSolver.domain.auth.application.dto.SignInDto;
 import com.dongdong.nameSolver.domain.auth.application.dto.SignUpDto;
+import com.dongdong.nameSolver.domain.auth.application.dto.TokenDto;
 import com.dongdong.nameSolver.domain.auth.application.service.AuthService;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
@@ -32,7 +33,7 @@ public class LoginServiceTest {
     @Test
     @Transactional
     void 회원가입() {
-        SignUpDto signUpDto = new SignUpDto("김동현", "lmkn", "lmkn5342", "lmkn5342", "djib1213ppoo");
+        SignUpDto signUpDto = new SignUpDto("김동현", "lmkn", "lmkn5342", "lmkn5342", "asdf");
         loginService.signUp(signUpDto);
 
         boolean result = memberRepository.existsBySolvedacName("lmkn5342");
@@ -41,18 +42,37 @@ public class LoginServiceTest {
 
     @Test
     @Transactional
-    void 로그인() {
+    void 로그인_아이디_불일치() {
         // 아이디, 비밀번호 가져오기
         SignInDto signInDto = new SignInDto();
+        signInDto.setId("lmkn534");
+        signInDto.setPassword("as");
 
-        String token = loginService.signIn(signInDto);
-        Assertions.assertThat(token).isNotNull();
+        TokenDto token = loginService.signIn(signInDto);
+        Assertions.assertThat(token.getAccessToken()).isNull();
     }
 
-    @Transactional
     @Test
-    void 크롤링() throws IOException {
-        String key = loginService.extractKey("lmkn5342");
-        Assertions.assertThat(key).isEqualTo("김동동");
+    @Transactional
+    void 로그인_아이디_일치_비번_불일치() {
+        // 아이디, 비밀번호 가져오기
+        SignInDto signInDto = new SignInDto();
+        signInDto.setId("lmkn5342");
+        signInDto.setPassword("as");
+
+        TokenDto token = loginService.signIn(signInDto);
+        Assertions.assertThat(token.getAccessToken()).isNull();
+    }
+
+    @Test
+    @Transactional
+    void 로그인_성공() {
+        // 아이디, 비밀번호 가져오기
+        SignInDto signInDto = new SignInDto();
+        signInDto.setId("lmkn5342");
+        signInDto.setPassword("asdf");
+
+        TokenDto token = loginService.signIn(signInDto);
+        Assertions.assertThat(token.getAccessToken()).isNotNull();
     }
 }
