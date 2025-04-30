@@ -12,6 +12,7 @@ import com.dongdong.nameSolver.global.jwt.JwtTokenHandler;
 import com.dongdong.nameSolver.global.util.RedisUtil;
 import com.dongdong.nameSolver.global.util.WebDriverUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -23,6 +24,7 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -92,9 +94,8 @@ public class AuthService {
         Member member = memberRepository.findById(signInDto.getId())
                 .orElseThrow(()-> new RuntimeException("해당하는 아이디가 없습니다."));
 
-        // 비밀번호 일치 확인
-        String hashedPassword = passwordEncoder.encode(signInDto.getPassword());
-        if(!member.getPassword().equals(hashedPassword)) {
+        // 비밀번호 확인
+        if(!passwordEncoder.matches(signInDto.getPassword(), member.getPassword())) {
             throw new RuntimeException("비밀번호가 불일치합니다.");
         }
 
