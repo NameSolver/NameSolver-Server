@@ -1,6 +1,6 @@
 package com.dongdong.nameSolver.global.jwt;
 
-import com.dongdong.nameSolver.domain.auth.application.dto.TokenDto;
+import com.dongdong.nameSolver.domain.auth.application.dto.response.AuthTokenResponse;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ public class JwtTokenHandler {
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 5;  // 5시간
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
 
-    public TokenDto generate(Member member) {
+    public AuthTokenResponse generate(Member member) {
         Date accessTokenExpiredAt = new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRE_TIME);
         Date refreshTokenExpiredAt = new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRE_TIME);
 
@@ -28,7 +28,7 @@ public class JwtTokenHandler {
         String refreshToken = jwtTokenProvider.generateRefreshToken(refreshTokenExpiredAt);
         log.info("RefreshToken of member[id : {}] is generated : {}.", member.getId(), refreshToken);
 
-        return new TokenDto(accessToken, refreshToken);
+        return new AuthTokenResponse(accessToken, refreshToken);
     }
 
     public void validateRefreshToken(String refreshToken) {

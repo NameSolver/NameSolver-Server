@@ -1,9 +1,10 @@
 package com.dongdong.nameSolver.auth;
 
-import com.dongdong.nameSolver.domain.auth.application.dto.KeyDto;
-import com.dongdong.nameSolver.domain.auth.application.dto.SignInDto;
-import com.dongdong.nameSolver.domain.auth.application.dto.SignUpDto;
-import com.dongdong.nameSolver.domain.auth.application.dto.TokenDto;
+import com.dongdong.nameSolver.domain.auth.application.dto.request.CreateAuthKeyCommand;
+import com.dongdong.nameSolver.domain.auth.application.dto.request.SignInCommand;
+import com.dongdong.nameSolver.domain.auth.application.dto.request.SignUpCommand;
+import com.dongdong.nameSolver.domain.auth.application.dto.response.AuthTokenResponse;
+import com.dongdong.nameSolver.domain.auth.application.dto.response.AuthKeyResponse;
 import com.dongdong.nameSolver.domain.auth.application.service.AuthService;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import java.io.IOException;
 
 @Slf4j
 @SpringBootTest
@@ -32,15 +32,17 @@ public class LoginServiceTest {
     @Test
     void 인증키_발급(){
         //인증키 발급
-        KeyDto key = loginService.generateKey("lmkn5342");
+        CreateAuthKeyCommand command = new CreateAuthKeyCommand();
+        command.setSolvedacName("lmkn5342");
+        AuthKeyResponse key = loginService.createKey(command);
         System.out.println("key: " + key.getKey());
     }
 
     @Test
     @Transactional
     void 회원가입() {
-        SignUpDto signUpDto = new SignUpDto("김동현", "lmkn", "lmkn5342", "lmkn5342", "asdf");
-        loginService.signUp(signUpDto);
+        SignUpCommand signUpCommand = new SignUpCommand("김동현", "lmkn", "lmkn5342", "lmkn5342", "asdf");
+        loginService.signUp(signUpCommand);
 
         boolean result = memberRepository.existsBySolvedacName("lmkn5342");
         Assertions.assertThat(result).isTrue();
@@ -50,12 +52,12 @@ public class LoginServiceTest {
     @Transactional
     void 로그인_아이디_불일치() {
         //회원 생성
-        SignUpDto signUpDto = new SignUpDto("김동현", "lmkn", "lmkn5342", "lmkn5342", "asdf");
-        String hashedPassword = passwordEncoder.encode(signUpDto.getPassword());
-        memberRepository.save(Member.join(signUpDto, hashedPassword));
+        SignUpCommand signUpCommand = new SignUpCommand("김동현", "lmkn", "lmkn5342", "lmkn5342", "asdf");
+        String hashedPassword = passwordEncoder.encode(signUpCommand.getPassword());
+        memberRepository.save(Member.join(signUpCommand, hashedPassword));
 
         // 아이디, 비밀번호 가져오기
-        SignInDto signInDto = new SignInDto();
+        SignInCommand signInDto = new SignInCommand();
         signInDto.setId("lmkn534");
         signInDto.setPassword("as");
 
@@ -68,12 +70,12 @@ public class LoginServiceTest {
     @Transactional
     void 로그인_아이디_일치_비번_불일치() {
         //회원 생성
-        SignUpDto signUpDto = new SignUpDto("김동현", "lmkn", "lmkn5342", "lmkn5342", "asdf");
-        String hashedPassword = passwordEncoder.encode(signUpDto.getPassword());
-        memberRepository.save(Member.join(signUpDto, hashedPassword));
+        SignUpCommand signUpCommand = new SignUpCommand("김동현", "lmkn", "lmkn5342", "lmkn5342", "asdf");
+        String hashedPassword = passwordEncoder.encode(signUpCommand.getPassword());
+        memberRepository.save(Member.join(signUpCommand, hashedPassword));
 
         // 아이디, 비밀번호 가져오기
-        SignInDto signInDto = new SignInDto();
+        SignInCommand signInDto = new SignInCommand();
         signInDto.setId("lmkn5342");
         signInDto.setPassword("as");
 
@@ -86,17 +88,17 @@ public class LoginServiceTest {
     @Transactional
     void 로그인_성공() {
         //회원 생성
-        SignUpDto signUpDto = new SignUpDto("김동현", "lmkn", "lmkn5342", "lmkn5342", "asdf");
-        String hashedPassword = passwordEncoder.encode(signUpDto.getPassword());
-        Member save = memberRepository.save(Member.join(signUpDto, hashedPassword));
+        SignUpCommand signUpCommand = new SignUpCommand("김동현", "lmkn", "lmkn5342", "lmkn5342", "asdf");
+        String hashedPassword = passwordEncoder.encode(signUpCommand.getPassword());
+        Member save = memberRepository.save(Member.join(signUpCommand, hashedPassword));
 
         // 아이디, 비밀번호 가져오기
-        SignInDto signInDto = new SignInDto();
+        SignInCommand signInDto = new SignInCommand();
         signInDto.setId("lmkn5342");
         signInDto.setPassword("asdf");
 
         // 토큰 반환 확인
-        TokenDto token = loginService.signIn(signInDto);
+        AuthTokenResponse token = loginService.signIn(signInDto);
         Assertions.assertThat(token.getAccessToken()).isNotNull();
 
         // 토큰 정보 확인

@@ -1,6 +1,6 @@
 package com.dongdong.nameSolver.domain.member.domain.entity;
 
-import com.dongdong.nameSolver.domain.auth.application.dto.SignUpDto;
+import com.dongdong.nameSolver.domain.auth.application.dto.request.SignUpCommand;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -36,12 +36,12 @@ public class Member {
         this.password = password;
     }
 
-    public static Member join(SignUpDto signUpDto, String hashedPassword) {
+    public static Member join(SignUpCommand signUpCommand, String hashedPassword) {
         return Member.builder()
-                .id(signUpDto.getId())
-                .email(signUpDto.getEmail())
-                .name(signUpDto.getName())
-                .solvedacName(signUpDto.getSolvedacName())
+                .id(signUpCommand.getId())
+                .email(signUpCommand.getEmail())
+                .name(signUpCommand.getName())
+                .solvedacName(signUpCommand.getSolvedacName())
                 .password(hashedPassword)
                 .build();
     }
