@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+import java.util.Optional;
+
 @SpringBootTest
 public class RedisTest {
     @Autowired
@@ -18,7 +20,7 @@ public class RedisTest {
         String key = "name";
 
         redisUtil.setData(key, "donghyun", 1000L);
-        String value = redisUtil.getData(key);
+        String value = redisUtil.getData(key).orElseThrow();
         Assertions.assertEquals(value, "donghyun");
     }
 
@@ -33,7 +35,7 @@ public class RedisTest {
             throw new RuntimeException(e);
         }
 
-        String value = redisUtil.getData(key);
-        Assertions.assertEquals(value, null);
+        Optional<String> value = redisUtil.getData(key);
+        Assertions.assertEquals(value, Optional.empty());
     }
 }
