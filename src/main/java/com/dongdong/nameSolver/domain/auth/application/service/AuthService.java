@@ -54,7 +54,9 @@ public class AuthService {
     @Transactional
     public SignUpResponse signUp(SignUpCommand signUpCommand) {
         // redis 에서 키 가져오기
-        String key = redisUtil.getData(signUpCommand.getSolvedacName());
+        String key = redisUtil.getData(signUpCommand.getSolvedacName()).orElseThrow(() -> {
+            throw new RuntimeException("인증 시간이 지났습니다.");
+        });
 
         // solved.ac 크롤링 해서 맞는지 확인하기
         String crawledKey = extractKey(signUpCommand.getSolvedacName());

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -15,8 +16,8 @@ public class RedisUtil {
         redisTemplate.opsForValue().set(key, value, expiredTime, TimeUnit.MILLISECONDS);
     }
 
-    public String getData(String key) {
-        return redisTemplate.opsForValue().get(key);
+    public Optional<String> getData(String key) {
+        return Optional.ofNullable(redisTemplate.opsForValue().get(key));
     }
 
     public void deleteData(String key) {
