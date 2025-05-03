@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @Repository
@@ -44,7 +45,7 @@ public class MemberRepository {
         return member.findAny();
     }
 
-    public Optional<Member> findByMemberId(String memberId) {
+    public Optional<Member> findByMemberId(UUID memberId) {
         Stream<Member> member = em.createQuery("select member from Member member where member.memberId = :memberId", Member.class)
                 .setParameter("memberId", memberId)
                 .getResultStream();
