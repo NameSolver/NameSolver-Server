@@ -5,6 +5,7 @@ import com.dongdong.nameSolver.domain.auth.application.dto.request.SignInCommand
 import com.dongdong.nameSolver.domain.auth.application.dto.request.SignUpCommand;
 import com.dongdong.nameSolver.domain.auth.application.dto.response.AuthTokenResponse;
 import com.dongdong.nameSolver.domain.auth.application.dto.response.AuthKeyResponse;
+import com.dongdong.nameSolver.domain.auth.application.dto.response.SignUpResponse;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
 import com.dongdong.nameSolver.global.jwt.JwtTokenHandler;
@@ -51,7 +52,7 @@ public class AuthService {
      * 회원가입 메서드
      */
     @Transactional
-    public void signUp(SignUpCommand signUpCommand) {
+    public SignUpResponse signUp(SignUpCommand signUpCommand) {
         // redis 에서 키 가져오기
         String key = redisUtil.getData(signUpCommand.getSolvedacName());
 
@@ -77,9 +78,12 @@ public class AuthService {
 
         // 유저 정보 저장
         Member member = Member.join(signUpCommand, hashedPassword);
-
-        // TODO: redis 에서 삭제
         memberRepository.save(member);
+
+        // redis에서 키 삭제
+        redisUtil.deleteData(signUpCommand.getSolvedacName());
+
+        return new SignUpResponse(member.getMemberId().toString());
     }
 
     /**
