@@ -18,4 +18,10 @@ public class CrawlingTest {
             authService.extractKey("fffee");
         }).hasMessage("존재하지 않는 solvedAC닉네임입니다.");
     }
+
+    @Test
+    void 크롤링_성공() {
+        String key = authService.extractKey("lmkn5342");
+        Assertions.assertThat(key).isEqualTo("0b55c152");
+    }
 }
