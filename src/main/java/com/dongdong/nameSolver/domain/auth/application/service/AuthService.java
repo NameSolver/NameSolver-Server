@@ -116,18 +116,24 @@ public class AuthService {
     /**
      * solvedac 크롤링으로 인증 확인하는 메서드
      */
-    private String extractKey(String solvedacName) {
+    public String extractKey(String solvedacName) {
+
+        // 크롬 드라이버 연결
         WebDriver driver = WebDriverUtil.getChromeDriver();
 
-        if (!ObjectUtils.isEmpty(driver)) {
-            driver.get("https://solved.ac/profile/" + solvedacName);
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        if(ObjectUtils.isEmpty(driver)) {
+            throw new RuntimeException("셀레니움 연결 실패");
+        }
 
+        // 유저 프로필 페이지 접속
+        driver.get("https://solved.ac/profile/" + solvedacName);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+
+        try {
             WebElement element = driver.findElement(By.cssSelector("#__next > div.css-1s1t70h > div.css-1948bce > div:nth-child(4) > div.css-0 > span"));
             return element.getText();
-        }
-        else {
-            throw new RuntimeException("셀레니움 연결 실패");
+        } catch (Exception e) {
+            throw new RuntimeException("존재하지 않는 solvedAC닉네임입니다.");
         }
     }
 }
