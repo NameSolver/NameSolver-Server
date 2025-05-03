@@ -37,7 +37,7 @@ public class SecurityConfig {
                 })
                 .authorizeHttpRequests((authorizeRequest) -> {
                     // 회원가입, 로그인 관련 API는 Jwt 인증 없이 접근 가능
-                    authorizeRequest.requestMatchers("/auth").permitAll();
+                    authorizeRequest.requestMatchers("/auth/**").permitAll();
                     authorizeRequest.requestMatchers("/error").permitAll();
                     // 나머지 모든 API는 Jwt 인증 필요
                     authorizeRequest.anyRequest().authenticated();

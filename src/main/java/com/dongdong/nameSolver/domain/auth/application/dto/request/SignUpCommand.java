@@ -11,6 +11,4 @@ public class SignUpCommand {
     private String solvedacName;
     private String id;
     private String password;
-
-
 }
