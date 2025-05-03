@@ -26,12 +26,12 @@ public class AuthController {
         return ApiResponse.success(authService.createKey(createAuthKeyCommand));
     }
 
-    @PostMapping("/login")
+    @PostMapping("/signin")
     public ApiResponse<AuthTokenResponse> signIn(@RequestBody SignInCommand signInCommand) {
         return ApiResponse.success(authService.signIn(signInCommand));
     }
 
-    @PostMapping("/join")
+    @PostMapping("/signup")
     public ApiResponse<SignUpResponse> signUp(@RequestBody SignUpCommand signUpCommand) {
         return ApiResponse.success(authService.signUp(signUpCommand));
     }
