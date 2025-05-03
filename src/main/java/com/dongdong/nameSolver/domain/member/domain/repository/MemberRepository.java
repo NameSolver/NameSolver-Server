@@ -43,4 +43,11 @@ public class MemberRepository {
                 .getResultStream();
         return member.findAny();
     }
+
+    public Optional<Member> findByMemberId(String memberId) {
+        Stream<Member> member = em.createQuery("select member from Member member where member.memberId = :memberId", Member.class)
+                .setParameter("memberId", memberId)
+                .getResultStream();
+        return member.findAny();
+    }
 }

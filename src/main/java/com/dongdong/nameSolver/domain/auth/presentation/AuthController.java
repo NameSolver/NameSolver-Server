@@ -1,6 +1,7 @@
 package com.dongdong.nameSolver.domain.auth.presentation;
 
 import com.dongdong.nameSolver.domain.auth.application.dto.request.CreateAuthKeyCommand;
+import com.dongdong.nameSolver.domain.auth.application.dto.request.ReissueCommand;
 import com.dongdong.nameSolver.domain.auth.application.dto.request.SignInCommand;
 import com.dongdong.nameSolver.domain.auth.application.dto.request.SignUpCommand;
 import com.dongdong.nameSolver.domain.auth.application.dto.response.AuthKeyResponse;
@@ -26,22 +27,17 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ApiResponse<AuthTokenResponse> signIn(SignInCommand signInCommand) {
+    public ApiResponse<AuthTokenResponse> signIn(@RequestBody SignInCommand signInCommand) {
         return ApiResponse.success(authService.signIn(signInCommand));
     }
 
     @PostMapping("/join")
-    public ApiResponse<SignUpResponse> signUp(SignUpCommand signUpCommand) {
+    public ApiResponse<SignUpResponse> signUp(@RequestBody SignUpCommand signUpCommand) {
         return ApiResponse.success(authService.signUp(signUpCommand));
     }
 
-    @PostMapping("/logout")
-    public void signOut() {
-
-    }
-
     @PostMapping("/reissue")
-    public void reissue() {
-
+    public ApiResponse<AuthTokenResponse> reissue(@RequestBody ReissueCommand reissueCommand) {
+        return ApiResponse.success(authService.reissue(reissueCommand));
     }
 }

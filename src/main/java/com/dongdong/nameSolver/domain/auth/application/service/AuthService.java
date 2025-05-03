@@ -1,6 +1,7 @@
 package com.dongdong.nameSolver.domain.auth.application.service;
 
 import com.dongdong.nameSolver.domain.auth.application.dto.request.CreateAuthKeyCommand;
+import com.dongdong.nameSolver.domain.auth.application.dto.request.ReissueCommand;
 import com.dongdong.nameSolver.domain.auth.application.dto.request.SignInCommand;
 import com.dongdong.nameSolver.domain.auth.application.dto.request.SignUpCommand;
 import com.dongdong.nameSolver.domain.auth.application.dto.response.AuthTokenResponse;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.devtools.v85.runtime.Runtime;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,7 +93,7 @@ public class AuthService {
     public AuthTokenResponse signIn(SignInCommand signInDto) {
         // 아이디 확인
         Member member = memberRepository.findById(signInDto.getId())
-                .orElseThrow(()-> new RuntimeException("해당하는 아이디가 없습니다."));
+                .orElseThrow(()-> new RuntimeException("해당하는 유저가 없습니다."));
 
         // 비밀번호 확인
         if(!passwordEncoder.matches(signInDto.getPassword(), member.getPassword())) {
@@ -99,14 +101,45 @@ public class AuthService {
         }
 
         // 토큰 발급
-        AuthTokenResponse token = jwtTokenHandler.generate(member);
+        AuthTokenResponse tokenResponse = jwtTokenHandler.generate(member);
 
         // 리프레쉬 토큰 저장
-        member.storeRefreshToken(token.getRefreshToken());
+        member.storeRefreshToken(tokenResponse.getRefreshToken());
         memberRepository.save(member);
 
         // 토큰 리턴
-        return token;
+        return tokenResponse;
+    }
+
+    /**
+     * 토큰 재발급 메서드
+     */
+    @Transactional
+    public AuthTokenResponse reissue(ReissueCommand reissueCommand) {
+        // 멤버 존재 확인
+        Member member = memberRepository.findByMemberId(reissueCommand.getMemberId())
+                .orElseThrow(() -> new RuntimeException("해당하는 아이디가 없습니다."));
+
+        // 토큰 일치 확인
+        validate(reissueCommand.getRefreshToken(), member);
+
+        // 토큰 재발급
+        AuthTokenResponse tokenResponse = jwtTokenHandler.generate(member);
+        log.info("Member[id: {}] token is reissued.", member.getId());
+
+        // 토큰 저장
+        member.storeRefreshToken(tokenResponse.getRefreshToken());
+        return tokenResponse;
+    }
+
+    private void validate(String refreshToken, Member member) {
+        // 유효한 리프레쉬인지 확인
+        jwtTokenHandler.validateRefreshToken(refreshToken);
+
+        // 유저와 일치하는 리프레쉬토큰인지 확인
+        if (!member.getRefreshToken().equals(refreshToken)) {
+            throw new RuntimeException("리프레시 토큰이 일치하지 않습니다.");
+        }
     }
 
     public boolean checkIdDuplication(String id) {
