@@ -169,6 +169,8 @@ public class AuthService {
             return element.getText();
         } catch (Exception e) {
             throw new RuntimeException("존재하지 않는 solvedAC닉네임입니다.");
+        } finally {
+            WebDriverUtil.quit(driver);
         }
     }
 }
