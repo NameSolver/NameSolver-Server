@@ -36,8 +36,6 @@ public class AuthService {
      * solvedac 사용자 인증용 키 발급 메서드
      */
     public AuthKeyResponse createKey(CreateAuthKeyCommand createAuthKeyCommand) {
-        // TODO: 이미 있는 회원인지 확인
-
         // 랜덤 키 생성
         String randomKey = UUID.randomUUID().toString().substring(0, 8);
 
