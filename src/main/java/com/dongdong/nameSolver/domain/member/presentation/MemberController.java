@@ -18,6 +18,6 @@ public class MemberController {
 
     @DeleteMapping("")
     public void signout(@AuthenticationPrincipal UUID memberId) {
-        
+
     }
 }
