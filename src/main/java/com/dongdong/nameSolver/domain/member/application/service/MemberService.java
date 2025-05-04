@@ -27,11 +27,13 @@ public class MemberService {
      * 로그아웃 메서드
      */
     @Transactional
-    public void signout(UUID memberId) {
+    public Boolean signOut(UUID memberId) {
         // 멤버 가져오기
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다."));
 
         // 리프레시 토큰 삭제
         member.removeRefreshToken();
+
+        return true;
     }
 }

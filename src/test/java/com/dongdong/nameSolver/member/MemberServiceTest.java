@@ -55,7 +55,7 @@ public class MemberServiceTest {
     @Test
     @Transactional
     void 로그아웃() {
-        memberService.signout(memberId);
+        memberService.signOut(memberId);
 
         Member member = memberRepository.findByMemberId(memberId).orElseThrow();
         Assertions.assertThat(member.getRefreshToken()).isNull();
