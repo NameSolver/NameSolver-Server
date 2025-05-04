@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @SpringBootTest
@@ -49,5 +50,14 @@ public class MemberServiceTest {
     void 유저_가져오기() {
         MemberResponse member = memberService.findMember(memberId);
         Assertions.assertThat(member.getName()).isEqualTo("김동현");
+    }
+
+    @Test
+    @Transactional
+    void 로그아웃() {
+        memberService.signout(memberId);
+
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow();
+        Assertions.assertThat(member.getRefreshToken()).isNull();
     }
 }
