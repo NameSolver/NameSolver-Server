@@ -5,11 +5,13 @@ import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @NoArgsConstructor
 public class MatchRequestCandidate {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "member_id")

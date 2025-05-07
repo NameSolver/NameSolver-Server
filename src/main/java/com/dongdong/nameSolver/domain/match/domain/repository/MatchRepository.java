@@ -1,13 +1,12 @@
 package com.dongdong.nameSolver.domain.match.domain.repository;
 
 import com.dongdong.nameSolver.domain.match.domain.constant.MatchType;
-import com.dongdong.nameSolver.domain.match.domain.entity.Match;
 import com.dongdong.nameSolver.domain.match.domain.entity.MatchRequest;
 import com.dongdong.nameSolver.domain.match.domain.entity.MatchRequestCandidate;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import jakarta.persistence.EntityManager;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
 @Repository
