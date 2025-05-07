@@ -21,10 +21,10 @@ public class MatchRecord {
     private int loserIncreaseRating;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "winner_id")
     private Member winner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "loser_id")
     private Member loser;
 }

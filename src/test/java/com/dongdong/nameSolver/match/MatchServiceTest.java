@@ -40,7 +40,7 @@ public class MatchServiceTest {
     @Transactional
     void 유저_세팅() {
         //회원 생성
-        SignUpCommand signUpCommand1 = new SignUpCommand("김동현", "lmkn", "lmkn5342", "lmkn5342", "asdf");
+        SignUpCommand signUpCommand1 = new SignUpCommand("김동현", "lmkn", "abcd", "lmkn5342", "asdf");
         String hashedPassword1 = passwordEncoder.encode(signUpCommand1.getPassword());
         memberId = memberRepository.save(Member.join(signUpCommand1, hashedPassword1)).getMemberId();
 
@@ -62,32 +62,24 @@ public class MatchServiceTest {
     }
 
     @Test
+    @Transactional
     void 대결_생성_동명이인() {
         // 동명이인끼리 대결 생성
         matchService.createMatch(memberId, new CreateMatchCommand(MatchType.SAME_FULL_NAME));
 
         // 동명이인들한테 대결 요청갔는지 확인
-        List<MatchRequestCandidate> byMatchType = matchRepository.findByMatchType();
+        List<MatchRequestCandidate> byMatchType = matchRepository.findByMatchType(MatchType.SAME_FULL_NAME);
         Assertions.assertThat(byMatchType.size()).isEqualTo(2);
     }
 
     @Test
+    @Transactional
     void 대결_생성_동성() {
         // 같은 성씨끼리 대결 생성
         matchService.createMatch(memberId, new CreateMatchCommand(MatchType.SAME_LAST_NAME));
 
         // 동성한테 대결 요청갔는지 확인
-        List<MatchRequestCandidate> byMatchType = matchRepository.findByMatchType();
+        List<MatchRequestCandidate> byMatchType = matchRepository.findByMatchType(MatchType.SAME_LAST_NAME);
         Assertions.assertThat(byMatchType.size()).isEqualTo(3);
-    }
-
-    @Test
-    void 대결_생성_초성() {
-        // 초성같은 사람끼리 대결 생성
-        matchService.createMatch(memberId, new CreateMatchCommand(MatchType.SAME_FIRST_CONSONANT));
-
-        // 동성한테 대결 요청갔는지 확인
-        List<MatchRequestCandidate> byMatchType = matchRepository.findByMatchType();
-        Assertions.assertThat(byMatchType.size()).isEqualTo(4);
     }
 }

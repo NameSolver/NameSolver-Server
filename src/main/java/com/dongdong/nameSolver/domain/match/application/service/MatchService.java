@@ -8,6 +8,7 @@ import com.dongdong.nameSolver.domain.match.domain.repository.MatchRepository;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,10 +17,12 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MatchService {
 
     private final MemberRepository memberRepository;
     private final MatchRepository matchRepository;
+
     /**
      * 대결 생성 메서드
      */

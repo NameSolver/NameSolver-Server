@@ -53,14 +53,16 @@ public class MemberRepository {
     }
 
     public List<Member> findSameName(Member member) {
-        return em.createQuery("select member from Member member where member.name = :name", Member.class)
+        return em.createQuery("select member from Member member where member.name = :name and member.memberId <> :id", Member.class)
                 .setParameter("name", member.getName())
+                .setParameter("id", member.getMemberId())
                 .getResultList();
     }
 
     public List<Member> findSameLastName(Member member) {
-        return em.createQuery("select member from Member member where member.name like :name", Member.class)
+        return em.createQuery("select member from Member member where member.name like :name and member.memberId <> :id", Member.class)
                 .setParameter("name", member.getName().charAt(0) + "%")
+                .setParameter("id", member.getMemberId())
                 .getResultList();
     }
 }

@@ -18,8 +18,10 @@ public class MatchRepository {
         this.em = em;
     }
 
-    public List<MatchRequestCandidate> findByMatchType() {
-        return null;
+    public List<MatchRequestCandidate> findByMatchType(MatchType matchType) {
+        return em.createQuery("select matchrequest from MatchRequestCandidate matchrequest inner join matchrequest.match match where match.matchType = :matchType", MatchRequestCandidate.class)
+                .setParameter("matchType", matchType)
+                .getResultList();
     }
 
     public MatchRequest save(MatchRequest matchRequest) {
