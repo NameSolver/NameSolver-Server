@@ -2,26 +2,57 @@ package com.dongdong.nameSolver.domain.match.application.service;
 
 import com.dongdong.nameSolver.domain.match.application.dto.request.CreateMatchCommand;
 import com.dongdong.nameSolver.domain.match.application.dto.response.MatchResponse;
+import com.dongdong.nameSolver.domain.match.domain.constant.MatchType;
+import com.dongdong.nameSolver.domain.match.domain.entity.MatchRequest;
+import com.dongdong.nameSolver.domain.match.domain.repository.MatchRepository;
+import com.dongdong.nameSolver.domain.member.domain.entity.Member;
+import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class MatchService {
 
+    private final MemberRepository memberRepository;
+    private final MatchRepository matchRepository;
     /**
      * 대결 생성 메서드
      */
     public MatchResponse createMatch(UUID memberId, CreateMatchCommand createMatchCommand) {
         // 멤버 확인
-        
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new RuntimeException("해당하는 유저가 없습니다."));
+
         // 매치 생성
+        MatchRequest match = matchRepository.save(MatchRequest.create(createMatchCommand.getMatchType(), member));
+
+        // 대결 타입에 맞는 유저 찾기
+        List<Member> members = getMemberByType(createMatchCommand.getMatchType(), member);
+
+        // 유저들에게 대결 요청 보내기
+        members.forEach(findMember -> matchRepository.request(match, findMember));
+
+        return new MatchResponse(match.getMatchRequestId());
+    }
+
+    private List<Member> getMemberByType(MatchType type, Member member) {
+        List<Member> members = new ArrayList<>();
 
         // 대결 타입에 따라 분기
         // 1. 동명이인 : 동명이인 찾아서 매치 연결
         // 2. 동성 : 같은 성 찾아서 매치 연결
-        // 3. 초성 : 초성 같은 사람 찾아서 매치 연결
+        // 3. 초성 : 초성 같은 사람 찾아서 매치 연결 -> 보류
+        switch (type) {
+            case SAME_FULL_NAME -> members = memberRepository.findSameName(member);
+            case SAME_LAST_NAME -> members = memberRepository.findSameLastName(member);
+            case SAME_FIRST_CONSONANT -> members = null;
+        }
 
-        return null;
+        return members;
     }
 }
+
