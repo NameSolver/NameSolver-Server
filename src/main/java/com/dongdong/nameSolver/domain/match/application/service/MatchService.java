@@ -3,7 +3,7 @@ package com.dongdong.nameSolver.domain.match.application.service;
 import com.dongdong.nameSolver.domain.match.application.dto.request.CreateMatchCommand;
 import com.dongdong.nameSolver.domain.match.application.dto.response.MatchResponse;
 import com.dongdong.nameSolver.domain.match.domain.constant.MatchType;
-import com.dongdong.nameSolver.domain.match.domain.entity.MatchRequest;
+import com.dongdong.nameSolver.domain.match.domain.entity.Match;
 import com.dongdong.nameSolver.domain.match.domain.repository.MatchRepository;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
@@ -31,7 +31,7 @@ public class MatchService {
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new RuntimeException("해당하는 유저가 없습니다."));
 
         // 매치 생성
-        MatchRequest match = matchRepository.save(MatchRequest.create(createMatchCommand.getMatchType(), member));
+        Match match = matchRepository.save(Match.create(createMatchCommand.getMatchType(), member));
 
         // 대결 타입에 맞는 유저 찾기
         List<Member> members = getMemberByType(createMatchCommand.getMatchType(), member);
@@ -39,7 +39,7 @@ public class MatchService {
         // 유저들에게 대결 요청 보내기
         members.forEach(findMember -> matchRepository.request(match, findMember));
 
-        return new MatchResponse(match.getMatchRequestId());
+        return new MatchResponse(match.getMatchId());
     }
 
     private List<Member> getMemberByType(MatchType type, Member member) {

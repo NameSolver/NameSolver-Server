@@ -4,9 +4,8 @@ import com.dongdong.nameSolver.domain.auth.application.dto.request.SignUpCommand
 import com.dongdong.nameSolver.domain.match.application.dto.request.CreateMatchCommand;
 import com.dongdong.nameSolver.domain.match.application.service.MatchService;
 import com.dongdong.nameSolver.domain.match.domain.constant.MatchType;
-import com.dongdong.nameSolver.domain.match.domain.entity.MatchRequestCandidate;
+import com.dongdong.nameSolver.domain.match.domain.entity.MatchCandidate;
 import com.dongdong.nameSolver.domain.match.domain.repository.MatchRepository;
-import com.dongdong.nameSolver.domain.member.application.service.MemberService;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
 import org.assertj.core.api.Assertions;
@@ -68,7 +67,7 @@ public class MatchServiceTest {
         matchService.createMatch(memberId, new CreateMatchCommand(MatchType.SAME_FULL_NAME));
 
         // 동명이인들한테 대결 요청갔는지 확인
-        List<MatchRequestCandidate> byMatchType = matchRepository.findByMatchType(MatchType.SAME_FULL_NAME);
+        List<MatchCandidate> byMatchType = matchRepository.findByMatchType(MatchType.SAME_FULL_NAME);
         Assertions.assertThat(byMatchType.size()).isEqualTo(2);
     }
 
@@ -79,7 +78,7 @@ public class MatchServiceTest {
         matchService.createMatch(memberId, new CreateMatchCommand(MatchType.SAME_LAST_NAME));
 
         // 동성한테 대결 요청갔는지 확인
-        List<MatchRequestCandidate> byMatchType = matchRepository.findByMatchType(MatchType.SAME_LAST_NAME);
+        List<MatchCandidate> byMatchType = matchRepository.findByMatchType(MatchType.SAME_LAST_NAME);
         Assertions.assertThat(byMatchType.size()).isEqualTo(3);
     }
 }

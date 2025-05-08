@@ -1,6 +1,5 @@
 package com.dongdong.nameSolver.domain.match.domain.entity;
 
-import com.dongdong.nameSolver.domain.match.domain.constant.MatchRequestResponse;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
@@ -9,7 +8,7 @@ import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
-public class MatchRequestCandidate {
+public class MatchCandidate {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
@@ -18,15 +17,11 @@ public class MatchRequestCandidate {
     private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "match_request_id")
-    private MatchRequest match;
+    @JoinColumn(name = "match_id")
+    private Match match;
 
-    @Enumerated(value = EnumType.STRING)
-    private MatchRequestResponse response;
-
-    public MatchRequestCandidate(Member member, MatchRequest match) {
+    public MatchCandidate(Member member, Match match) {
         this.member = member;
         this.match = match;
-        this.response = MatchRequestResponse.NONE;
     }
 }
