@@ -10,6 +10,7 @@ import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,7 @@ public class MatchService {
     /**
      * 대결 수락 메서드
      */
+    @Transactional
     public void acceptMatch(UUID memberId, Long matchId) {
         // 멤버 확인
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new RuntimeException("해당하는 유저가 없습니다."));
