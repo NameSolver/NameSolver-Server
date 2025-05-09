@@ -2,6 +2,7 @@ package com.dongdong.nameSolver.match;
 
 import com.dongdong.nameSolver.domain.auth.application.dto.request.SignUpCommand;
 import com.dongdong.nameSolver.domain.match.application.dto.request.CreateMatchCommand;
+import com.dongdong.nameSolver.domain.match.application.dto.response.MatchResponse;
 import com.dongdong.nameSolver.domain.match.application.service.MatchService;
 import com.dongdong.nameSolver.domain.match.domain.constant.MatchType;
 import com.dongdong.nameSolver.domain.match.domain.entity.MatchCandidate;
@@ -34,6 +35,7 @@ public class MatchServiceTest {
     private MatchRepository matchRepository;
 
     private UUID memberId;
+    private UUID accepterId;
 
     @BeforeEach
     @Transactional
@@ -45,7 +47,7 @@ public class MatchServiceTest {
 
         SignUpCommand signUpCommand2 = new SignUpCommand("김동현", "lmkn", "qwer", "qwer", "asdf");
         String hashedPassword2 = passwordEncoder.encode(signUpCommand2.getPassword());
-        memberRepository.save(Member.join(signUpCommand2, hashedPassword2));
+        accepterId = memberRepository.save(Member.join(signUpCommand2, hashedPassword2)).getMemberId();
 
         SignUpCommand signUpCommand3 = new SignUpCommand("김동현", "lmkn", "test", "aabbcc", "asdf");
         String hashedPassword3 = passwordEncoder.encode(signUpCommand3.getPassword());
@@ -80,5 +82,18 @@ public class MatchServiceTest {
         // 동성한테 대결 요청갔는지 확인
         List<MatchCandidate> byMatchType = matchRepository.findByMatchType(MatchType.SAME_LAST_NAME);
         Assertions.assertThat(byMatchType.size()).isEqualTo(3);
+    }
+
+    @Test
+    @Transactional
+    void 대결_수락() {
+        // 동명이인끼리 대결 생성
+        MatchResponse match = matchService.createMatch(memberId, new CreateMatchCommand(MatchType.SAME_FULL_NAME));
+
+        // 대결 수락
+        matchService.acceptMatch(accepterId, match.getId());
+
+        // 수락 확인
+        matchRepository.findMatchById(match.getId());
     }
 }

@@ -32,4 +32,10 @@ public class MatchRepository {
         em.persist(matchCandidate);
         return matchCandidate;
     }
+
+    public Match findMatchById(Long id) {
+        return em.createQuery("select match from Match match where match.id = :id", Match.class)
+                .setParameter("id", id)
+                .getSingleResult();
+    }
 }

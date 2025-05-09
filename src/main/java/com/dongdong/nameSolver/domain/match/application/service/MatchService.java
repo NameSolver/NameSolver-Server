@@ -57,5 +57,12 @@ public class MatchService {
 
         return members;
     }
+
+    /**
+     * 대결 수락 메서드
+     */
+    public void acceptMatch(UUID memberId, Long matchId) {
+        
+    }
 }
 
