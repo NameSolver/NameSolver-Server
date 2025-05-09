@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @Getter
+@Table(name = "match_request")
 public class Match {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long matchId;

@@ -27,6 +27,7 @@ public class MatchService {
     /**
      * 대결 생성 메서드
      */
+    @Transactional
     public MatchResponse createMatch(UUID memberId, CreateMatchCommand createMatchCommand) {
         // 멤버 확인
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new RuntimeException("해당하는 유저가 없습니다."));
