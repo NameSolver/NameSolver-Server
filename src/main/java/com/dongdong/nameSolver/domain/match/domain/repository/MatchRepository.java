@@ -7,6 +7,8 @@ import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Repository
 public class MatchRepository {
@@ -33,9 +35,10 @@ public class MatchRepository {
         return matchCandidate;
     }
 
-    public Match findMatchById(Long id) {
-        return em.createQuery("select match from Match match where match.id = :id", Match.class)
+    public Optional<Match> findMatchById(Long id) {
+        Stream<Match> result = em.createQuery("select match from Match match where match.id = :id", Match.class)
                 .setParameter("id", id)
-                .getSingleResult();
+                .getResultStream();
+        return result.findAny();
     }
 }

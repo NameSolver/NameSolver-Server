@@ -5,6 +5,7 @@ import com.dongdong.nameSolver.domain.match.application.dto.request.CreateMatchC
 import com.dongdong.nameSolver.domain.match.application.dto.response.MatchResponse;
 import com.dongdong.nameSolver.domain.match.application.service.MatchService;
 import com.dongdong.nameSolver.domain.match.domain.constant.MatchType;
+import com.dongdong.nameSolver.domain.match.domain.entity.Match;
 import com.dongdong.nameSolver.domain.match.domain.entity.MatchCandidate;
 import com.dongdong.nameSolver.domain.match.domain.repository.MatchRepository;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
@@ -94,6 +95,7 @@ public class MatchServiceTest {
         matchService.acceptMatch(accepterId, match.getId());
 
         // 수락 확인
-        matchRepository.findMatchById(match.getId());
+        Match acceptedMatch = matchRepository.findMatchById(match.getId()).get();
+        Assertions.assertThat(acceptedMatch.getAccepter().getMemberId()).isEqualTo(accepterId);
     }
 }

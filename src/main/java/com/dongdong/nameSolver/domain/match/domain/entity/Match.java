@@ -44,4 +44,13 @@ public class Match {
     public static Match create(MatchType matchType, Member member) {
         return new Match(matchType, member);
     }
+
+    public void acceptMatch(int requesterStartRating, int accepterStartRating, Member accepter) {
+        this.requesterStartRating = requesterStartRating;
+        this.accepterStartRating = accepterStartRating;
+        this.accepter = accepter;
+
+        this.startAt = LocalDateTime.now();
+        this.endAt = startAt.plusDays(1);
+    }
 }

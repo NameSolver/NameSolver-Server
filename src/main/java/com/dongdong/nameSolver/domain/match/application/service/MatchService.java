@@ -62,7 +62,24 @@ public class MatchService {
      * 대결 수락 메서드
      */
     public void acceptMatch(UUID memberId, Long matchId) {
-        
+        // 멤버 확인
+        Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new RuntimeException("해당하는 유저가 없습니다."));
+
+        // 대결 확인
+        Match match = matchRepository.findMatchById(matchId).orElseThrow(() -> new RuntimeException("해당하는 대결이 존재하지 않습니다."));
+
+        // 대결이 이미 승인된 상태인지 확인
+        if(match.getAccepter() != null) {
+            throw new RuntimeException("이미 승인된 대결입니다.");
+        }
+
+        // 멤버들의 solvedAC rating 가져오기
+        int requesterStartRating = 0;
+        int accepterStartRating = 0;
+
+        // 업데이트
+        match.acceptMatch(requesterStartRating, accepterStartRating, member);
+
     }
 }
 
