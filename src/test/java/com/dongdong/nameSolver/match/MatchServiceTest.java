@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @SpringBootTest
 public class MatchServiceTest {
@@ -97,5 +99,17 @@ public class MatchServiceTest {
         // 수락 확인
         Match acceptedMatch = matchRepository.findMatchById(match.getId()).get();
         Assertions.assertThat(acceptedMatch.getAccepter().getMemberId()).isEqualTo(accepterId);
+    }
+
+    @Test
+    @Transactional
+    void 대결_수락_경쟁_상황() {
+        // 동명이인끼리 대결 생성
+        MatchResponse match = matchService.createMatch(memberId, new CreateMatchCommand(MatchType.SAME_FULL_NAME));
+
+        // 스레드 생성
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+
+
     }
 }
