@@ -65,4 +65,8 @@ public class MemberRepository {
                 .setParameter("id", member.getMemberId())
                 .getResultList();
     }
+
+    public List<Member> findAll() {
+        return em.createQuery("select member from Member member", Member.class).getResultList();
+    }
 }
