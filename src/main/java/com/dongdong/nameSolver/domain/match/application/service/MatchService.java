@@ -64,7 +64,7 @@ public class MatchService {
      * 대결 수락 메서드
      */
     @Transactional
-    public void acceptMatch(UUID memberId, Long matchId) {
+    public boolean acceptMatch(UUID memberId, Long matchId) {
         // 멤버 확인
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new RuntimeException("해당하는 유저가 없습니다."));
 
@@ -83,6 +83,7 @@ public class MatchService {
         // 업데이트
         match.acceptMatch(requesterStartRating, accepterStartRating, member);
 
+        return true;
     }
 }
 
