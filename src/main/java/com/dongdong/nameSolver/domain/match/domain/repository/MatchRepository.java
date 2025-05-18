@@ -5,6 +5,10 @@ import com.dongdong.nameSolver.domain.match.domain.entity.Match;
 import com.dongdong.nameSolver.domain.match.domain.entity.MatchCandidate;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import org.hibernate.LockMode;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +42,7 @@ public class MatchRepository {
     public Optional<Match> findMatchById(Long id) {
         Stream<Match> result = em.createQuery("select match from Match match where match.id = :id", Match.class)
                 .setParameter("id", id)
+                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                 .getResultStream();
         return result.findAny();
     }
