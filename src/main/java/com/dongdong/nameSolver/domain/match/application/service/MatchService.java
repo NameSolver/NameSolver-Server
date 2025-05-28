@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -104,7 +105,9 @@ public class MatchService {
     }
 
     private int getSolvedAcRating(Member member) {
-        return 10;
+        int rating = (int) Math.random() * 10;
+        log.info("{} rating : {}", member.getMemberId(), rating);
+        return rating;
     }
 }
 

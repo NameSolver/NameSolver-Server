@@ -4,6 +4,8 @@ import com.dongdong.nameSolver.domain.match.domain.entity.MatchRecord;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class MatchRecordRepository {
     private final EntityManager em;
@@ -14,5 +16,9 @@ public class MatchRecordRepository {
 
     public void save(MatchRecord matchRecord) {
         em.persist(matchRecord);
+    }
+
+    public List<MatchRecord> findAll() {
+        return em.createQuery("select match from MatchRecord match", MatchRecord.class).getResultList();
     }
 }

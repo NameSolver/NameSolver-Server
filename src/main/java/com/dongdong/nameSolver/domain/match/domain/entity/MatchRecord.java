@@ -3,10 +3,14 @@ package com.dongdong.nameSolver.domain.match.domain.entity;
 import com.dongdong.nameSolver.domain.match.domain.constant.MatchType;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
+@NoArgsConstructor
+@Getter
 public class MatchRecord {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long matchRecordId;

@@ -7,6 +7,8 @@ import com.dongdong.nameSolver.domain.match.application.service.MatchService;
 import com.dongdong.nameSolver.domain.match.domain.constant.MatchType;
 import com.dongdong.nameSolver.domain.match.domain.entity.Match;
 import com.dongdong.nameSolver.domain.match.domain.entity.MatchCandidate;
+import com.dongdong.nameSolver.domain.match.domain.entity.MatchRecord;
+import com.dongdong.nameSolver.domain.match.domain.repository.MatchRecordRepository;
 import com.dongdong.nameSolver.domain.match.domain.repository.MatchRepository;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
@@ -21,6 +23,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -31,16 +34,16 @@ import java.util.concurrent.*;
 @Import({TestDataHelper.class})
 public class MatchServiceTest {
     @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
     private MatchService matchService;
 
     @Autowired
     private MatchRepository matchRepository;
+
+    @Autowired
+    private MatchRecordRepository matchRecordRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Autowired
     private TestDataHelper testDataHelper;
@@ -95,7 +98,7 @@ public class MatchServiceTest {
         MatchResponse match = matchService.createMatch(memberIds.get(0), new CreateMatchCommand(MatchType.SAME_FULL_NAME));
 
         // 스레드 생성
-        int nThread = 5;
+        int nThread = 100;
 
         ExecutorService executorService = Executors.newFixedThreadPool(nThread);
         CountDownLatch countDownLatch = new CountDownLatch(nThread);
@@ -140,5 +143,18 @@ public class MatchServiceTest {
                 countDownLatch.countDown();
             }
         }
+    }
+
+    @Test
+    @Transactional
+    void 대결_종료() {
+        List<UUID> memberIds = testDataHelper.setUser();
+        memberRepository.findByMemberId(memberIds.get(0))
+        Match match = new Match(LocalDateTime.of(2025, 5, 25, 12, 30), LocalDateTime.of(2025, 5, 26, 12, 30), MatchType.SAME_FULL_NAME, memberIds.get(0), memberIds.get(1), 30, 50);
+        matchRepository.save(match);
+
+        matchService.expiredMatch();
+        List<MatchRecord> all = matchRecordRepository.findAll();
+        Assertions.assertThat(all.get(0).getWinner()).isIn()
     }
 }
