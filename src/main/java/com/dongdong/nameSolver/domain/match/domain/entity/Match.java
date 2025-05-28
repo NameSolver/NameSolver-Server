@@ -46,6 +46,16 @@ public class Match {
         return new Match(matchType, member);
     }
 
+    public Match(LocalDateTime startAt, LocalDateTime endAt, MatchType matchType, Member requester, Member accepter, int requesterStartRating, int accepterStartRating) {
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.matchType = matchType;
+        this.requester = requester;
+        this.accepter = accepter;
+        this.requesterStartRating = requesterStartRating;
+        this.accepterStartRating = accepterStartRating;
+    }
+
     public void acceptMatch(int requesterStartRating, int accepterStartRating, Member accepter) {
         this.requesterStartRating = requesterStartRating;
         this.accepterStartRating = accepterStartRating;

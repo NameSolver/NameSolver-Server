@@ -10,6 +10,8 @@ import org.hibernate.LockMode;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -45,5 +47,17 @@ public class MatchRepository {
                 .setLockMode(LockModeType.PESSIMISTIC_WRITE)
                 .getResultStream();
         return result.findAny();
+    }
+
+    public List<Match> findByEndDate() {
+        return em.createQuery("select match from Match match where match.endAt < :day", Match.class)
+                .setParameter("day", LocalDateTime.now())
+                .getResultList();
+    }
+
+    public void deleteMatchById(Long matchId) {
+        em.createQuery("delete from Match match where match.matchId = :matchId")
+                .setParameter("matchId", matchId)
+                .executeUpdate();
     }
 }

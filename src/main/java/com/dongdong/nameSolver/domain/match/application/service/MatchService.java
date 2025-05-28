@@ -4,6 +4,8 @@ import com.dongdong.nameSolver.domain.match.application.dto.request.CreateMatchC
 import com.dongdong.nameSolver.domain.match.application.dto.response.MatchResponse;
 import com.dongdong.nameSolver.domain.match.domain.constant.MatchType;
 import com.dongdong.nameSolver.domain.match.domain.entity.Match;
+import com.dongdong.nameSolver.domain.match.domain.entity.MatchRecord;
+import com.dongdong.nameSolver.domain.match.domain.repository.MatchRecordRepository;
 import com.dongdong.nameSolver.domain.match.domain.repository.MatchRepository;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
@@ -23,6 +25,7 @@ public class MatchService {
 
     private final MemberRepository memberRepository;
     private final MatchRepository matchRepository;
+    private final MatchRecordRepository matchRecordRepository;
 
     /**
      * 대결 생성 메서드
@@ -84,6 +87,24 @@ public class MatchService {
         match.acceptMatch(requesterStartRating, accepterStartRating, member);
 
         return true;
+    }
+
+    @Transactional
+    public void expiredMatch() {
+        // 기간 지난 대결 조회
+        List<Match> lastMatch = matchRepository.findByEndDate();
+
+        lastMatch.forEach(match -> {
+            int accepterEndRating = getSolvedAcRating(match.getAccepter());
+            int requesterEndRating = getSolvedAcRating(match.getRequester());
+            MatchRecord matchRecord = MatchRecord.quitMatch(match, requesterEndRating, accepterEndRating);
+            matchRecordRepository.save(matchRecord);
+            matchRepository.deleteMatchById(match.getMatchId());
+        });
+    }
+
+    private int getSolvedAcRating(Member member) {
+        return 10;
     }
 }
 
