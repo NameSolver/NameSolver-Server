@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.*;
 
@@ -149,12 +150,15 @@ public class MatchServiceTest {
     @Transactional
     void 대결_종료() {
         List<UUID> memberIds = testDataHelper.setUser();
-        memberRepository.findByMemberId(memberIds.get(0))
-        Match match = new Match(LocalDateTime.of(2025, 5, 25, 12, 30), LocalDateTime.of(2025, 5, 26, 12, 30), MatchType.SAME_FULL_NAME, memberIds.get(0), memberIds.get(1), 30, 50);
+        Member member1 = memberRepository.findByMemberId(memberIds.get(0)).get();
+        Member member2 = memberRepository.findByMemberId(memberIds.get(1)).get();
+        Match match = new Match(LocalDateTime.of(2025, 5, 25, 12, 30), LocalDateTime.of(2025, 5, 26, 12, 30), MatchType.SAME_FULL_NAME, member1, member2, 30, 50);
         matchRepository.save(match);
 
         matchService.expiredMatch();
         List<MatchRecord> all = matchRecordRepository.findAll();
-        Assertions.assertThat(all.get(0).getWinner()).isIn()
+        log.info("winner: {}", all.get(0).getWinner().getMemberId());
+        log.info("loser: {}" , all.get(0).getLoser().getMemberId());
+        Assertions.assertThat(all.get(0).getWinner().getMemberId()).isIn(List.of(member1.getMemberId(), member2.getMemberId()));
     }
 }

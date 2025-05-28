@@ -11,9 +11,11 @@ import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -26,7 +28,7 @@ public class MatchService {
 
     private final MemberRepository memberRepository;
     private final MatchRepository matchRepository;
-    private final MatchRecordRepository matchRecordRepository;
+    private final MatchAsyncService matchAsyncService;
 
     /**
      * 대결 생성 메서드
@@ -90,24 +92,9 @@ public class MatchService {
         return true;
     }
 
-    @Transactional
+    @Scheduled(fixedRate = 1000)
     public void expiredMatch() {
-        // 기간 지난 대결 조회
-        List<Match> lastMatch = matchRepository.findByEndDate();
-
-        lastMatch.forEach(match -> {
-            int accepterEndRating = getSolvedAcRating(match.getAccepter());
-            int requesterEndRating = getSolvedAcRating(match.getRequester());
-            MatchRecord matchRecord = MatchRecord.quitMatch(match, requesterEndRating, accepterEndRating);
-            matchRecordRepository.save(matchRecord);
-            matchRepository.deleteMatchById(match.getMatchId());
-        });
-    }
-
-    private int getSolvedAcRating(Member member) {
-        int rating = (int) Math.random() * 10;
-        log.info("{} rating : {}", member.getMemberId(), rating);
-        return rating;
+        matchAsyncService.handleMatchesAsync();
     }
 }
 
