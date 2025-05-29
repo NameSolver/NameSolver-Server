@@ -94,6 +94,9 @@ public class MatchService {
         // 업데이트
         match.acceptMatch(requesterStartRating, accepterStartRating, member);
 
+        // 나머지 매치 후보자 삭제
+        matchRepository.deleteMatchCandidate(match.getMatchId());
+
         // 종료 예약 설정
         rabbitTemplate.convertAndSend(exchangeName, routingKey, match.getMatchId(), msg -> {
             msg.getMessageProperties().setHeader("x-delay", 10000);

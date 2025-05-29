@@ -60,4 +60,10 @@ public class MatchRepository {
                 .setParameter("matchId", matchId)
                 .executeUpdate();
     }
+
+    public void deleteMatchCandidate(Long matchId) {
+        em.createQuery("delete from MatchCandidate matchCandidate where matchCandidate.match.matchId = :matchId")
+                .setParameter("matchId", matchId)
+                .executeUpdate();
+    }
 }
