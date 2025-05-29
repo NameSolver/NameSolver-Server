@@ -37,11 +37,11 @@ public class TestDataInitializer implements ApplicationRunner {
     @Transactional
     public List<Member> setUser() {
         List<Member> memberIds = new ArrayList<>();
-        memberIds.add(createUser("김동현"));
-        memberIds.add(createUser("김동현"));
-        memberIds.add(createUser("김동현"));
-        memberIds.add(createUser("김도현"));
-        memberIds.add(createUser("기도현"));
+        memberIds.add(createUser("김동현", "lmkn"));
+        memberIds.add(createUser("김동현", "lmkn5342"));
+        memberIds.add(createUser("김동현", "1234"));
+        memberIds.add(createUser("김도현", "jlkj"));
+        memberIds.add(createUser("기도현", "asdf"));
         return memberIds;
     }
 
@@ -69,8 +69,8 @@ public class TestDataInitializer implements ApplicationRunner {
         matchRepository.save(match9);
     }
 
-    private Member createUser(String name) {
-        SignUpCommand signUpCommand = new SignUpCommand(name, UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString());
+    private Member createUser(String name, String id) {
+        SignUpCommand signUpCommand = new SignUpCommand(name, UUID.randomUUID().toString(), UUID.randomUUID().toString(), id, "5342");
         String hashedPassword = passwordEncoder.encode(signUpCommand.getPassword());
         return memberRepository.save(Member.join(signUpCommand, hashedPassword));
     }

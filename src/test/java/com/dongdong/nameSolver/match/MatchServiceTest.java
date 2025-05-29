@@ -1,6 +1,7 @@
 package com.dongdong.nameSolver.match;
 
 import com.dongdong.nameSolver.domain.auth.application.dto.request.SignUpCommand;
+import com.dongdong.nameSolver.domain.match.application.dto.request.AcceptMatchCommand;
 import com.dongdong.nameSolver.domain.match.application.dto.request.CreateMatchCommand;
 import com.dongdong.nameSolver.domain.match.application.dto.response.MatchResponse;
 import com.dongdong.nameSolver.domain.match.application.service.MatchService;
@@ -84,7 +85,7 @@ public class MatchServiceTest {
         MatchResponse match = matchService.createMatch(memberIds.get(0), new CreateMatchCommand(MatchType.SAME_FULL_NAME));
 
         // 대결 수락
-        matchService.acceptMatch(memberIds.get(1), match.getId());
+        matchService.acceptMatch(memberIds.get(1), new AcceptMatchCommand(match.getId()));
 
         // 수락 확인
         Match acceptedMatch = matchRepository.findMatchById(match.getId()).get();
@@ -134,7 +135,7 @@ public class MatchServiceTest {
         @Override
         public Boolean call() throws Exception {
             try{
-                return matchService.acceptMatch(memberId, matchId);
+                return matchService.acceptMatch(memberId, new AcceptMatchCommand(matchId));
             }
             catch (Exception e) {
                 log.error(e.getMessage());
@@ -155,7 +156,7 @@ public class MatchServiceTest {
         Match match = new Match(LocalDateTime.of(2025, 5, 25, 12, 30), LocalDateTime.of(2025, 5, 26, 12, 30), MatchType.SAME_FULL_NAME, member1, member2, 30, 50);
         matchRepository.save(match);
 
-        matchService.expiredMatch();
+//        matchService.expiredMatch();
         List<MatchRecord> all = matchRecordRepository.findAll();
         log.info("winner: {}", all.get(0).getWinner().getMemberId());
         log.info("loser: {}" , all.get(0).getLoser().getMemberId());

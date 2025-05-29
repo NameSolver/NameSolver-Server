@@ -1,9 +1,8 @@
-FROM amazoncorretto:17
-# FROM openjdk:17-jdk
-ARG JAR_FILE=build/libs/*.jar
+# Dockerfile
+FROM rabbitmq:4-management
 
-COPY ${JAR_FILE} my-project.jar
-# COPY build/libs/*.jar my-project.jar
-ENTRYPOINT ["java","-jar","/my-project.jar"]
+# 호스트에 미리 내려받은 .ez 파일을 컨테이너에 복사
+ADD rabbitmq_delayed_message_exchange-4.1.0.ez /opt/rabbitmq/plugins/
 
-RUN ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+# 플러그인 활성화
+RUN rabbitmq-plugins enable --offline rabbitmq_delayed_message_exchange

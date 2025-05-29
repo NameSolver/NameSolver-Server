@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication(scanBasePackages = {"com.dongdong.nameSolver.domain", "com.dongdong.nameSolver.global"})
-//@Import(TestDataInitializer.class)
+@Import(TestDataInitializer.class)
 @EnableScheduling
 @EnableAsync
 @ConfigurationPropertiesScan

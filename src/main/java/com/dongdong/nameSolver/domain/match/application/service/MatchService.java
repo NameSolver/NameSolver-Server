@@ -1,5 +1,6 @@
 package com.dongdong.nameSolver.domain.match.application.service;
 
+import com.dongdong.nameSolver.domain.match.application.dto.request.AcceptMatchCommand;
 import com.dongdong.nameSolver.domain.match.application.dto.request.CreateMatchCommand;
 import com.dongdong.nameSolver.domain.match.application.dto.response.MatchResponse;
 import com.dongdong.nameSolver.domain.match.domain.constant.MatchType;
@@ -74,12 +75,12 @@ public class MatchService {
      * 대결 수락 메서드
      */
     @Transactional
-    public boolean acceptMatch(UUID memberId, Long matchId) {
+    public boolean acceptMatch(UUID memberId, AcceptMatchCommand acceptMatchCommand) {
         // 멤버 확인
         Member member = memberRepository.findByMemberId(memberId).orElseThrow(() -> new RuntimeException("해당하는 유저가 없습니다."));
 
         // 대결 확인
-        Match match = matchRepository.findMatchById(matchId).orElseThrow(() -> new RuntimeException("해당하는 대결이 존재하지 않습니다."));
+        Match match = matchRepository.findMatchById(acceptMatchCommand.getMatchId()).orElseThrow(() -> new RuntimeException("해당하는 대결이 존재하지 않습니다."));
 
         // 대결이 이미 승인된 상태인지 확인
         if(match.getAccepter() != null) {
@@ -95,10 +96,10 @@ public class MatchService {
 
         // 종료 예약 설정
         rabbitTemplate.convertAndSend(exchangeName, routingKey, match.getMatchId(), msg -> {
-            msg.getMessageProperties().setHeader("x-delay", Duration.between(match.getStartAt(), match.getEndAt()));
+            msg.getMessageProperties().setHeader("x-delay", 10000);
             return msg;
         });
-        log.info("[rabbitMQ] {} 대결 등록", matchId);
+        log.info("[rabbitMQ] {} 대결 등록", acceptMatchCommand.getMatchId());
 
         return true;
     }
