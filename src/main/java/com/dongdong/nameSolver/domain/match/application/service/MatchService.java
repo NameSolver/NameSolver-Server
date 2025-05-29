@@ -4,21 +4,19 @@ import com.dongdong.nameSolver.domain.match.application.dto.request.CreateMatchC
 import com.dongdong.nameSolver.domain.match.application.dto.response.MatchResponse;
 import com.dongdong.nameSolver.domain.match.domain.constant.MatchType;
 import com.dongdong.nameSolver.domain.match.domain.entity.Match;
-import com.dongdong.nameSolver.domain.match.domain.entity.MatchRecord;
-import com.dongdong.nameSolver.domain.match.domain.repository.MatchRecordRepository;
 import com.dongdong.nameSolver.domain.match.domain.repository.MatchRepository;
 import com.dongdong.nameSolver.domain.member.domain.entity.Member;
 import com.dongdong.nameSolver.domain.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -28,7 +26,13 @@ public class MatchService {
 
     private final MemberRepository memberRepository;
     private final MatchRepository matchRepository;
-    private final MatchAsyncService matchAsyncService;
+    private final RabbitTemplate rabbitTemplate;
+
+    @Value("${rabbitmq.exchange.name}")
+    private String exchangeName;
+
+    @Value("${rabbitmq.routing.key}")
+    private String routingKey;
 
     /**
      * 대결 생성 메서드
@@ -89,12 +93,14 @@ public class MatchService {
         // 업데이트
         match.acceptMatch(requesterStartRating, accepterStartRating, member);
 
-        return true;
-    }
+        // 종료 예약 설정
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, match.getMatchId(), msg -> {
+            msg.getMessageProperties().setHeader("x-delay", Duration.between(match.getStartAt(), match.getEndAt()));
+            return msg;
+        });
+        log.info("[rabbitMQ] {} 대결 등록", matchId);
 
-    @Scheduled(fixedRate = 1000)
-    public void expiredMatch() {
-        matchAsyncService.handleMatchesAsync();
+        return true;
     }
 }
 

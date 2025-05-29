@@ -18,7 +18,8 @@ public class MatchProcessor {
     private final MatchRepository matchRepository;
 
     @Transactional
-    public void processMatch(Match match) {
+    public void processMatch(Long matchId) {
+        Match match = matchRepository.findMatchById(matchId).orElseThrow();
         int accepterEndRating = getSolvedAcRating(match.getAccepter());
         int requesterEndRating = getSolvedAcRating(match.getRequester());
         MatchRecord matchRecord = MatchRecord.quitMatch(match, requesterEndRating, accepterEndRating);
